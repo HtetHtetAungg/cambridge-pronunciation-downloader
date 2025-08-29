@@ -131,10 +131,15 @@ def fetch_us_pronunciation_bytes(word: str):
             audio_url = src
         else:
             audio_url = "https://dictionary.cambridge.org" + src
-        audio = requests.get(audio_url, headers=headers, timeout=15)
-        if audio.status_code != 200 or not audio.content:
+        audio = requests.get(audio_url, headers=headers, timeout=15, stream=True)
+        if audio.status_code != 200:
             return None
-        return audio.content
+
+        content = BytesIO()
+        for chunk in audio.iter_content(chunk_size=8192):
+            if chunk:
+                content.write(chunk)
+        return content.getvalue()
     except:
         return None
 
