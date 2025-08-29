@@ -119,9 +119,10 @@ def fetch_us_pronunciation_bytes(word: str):
         if r.status_code != 200:
             return None
         # regex to find US pronunciation mp3 URL
-        match = re.search(r'data-src-mp3="([^"]*us_pron[^"]*)"', r.text)
+       # Try multiple patterns to catch short/common words
+        match = re.search(r'data-src-mp3="([^"]*us[^"]*\.mp3)"', r.text)
         if not match:
-            match = re.search(r'<source type="audio/mpeg" src="([^"]*us_pron[^"]*)"', r.text)
+            match = re.search(r'<source type="audio/mpeg" src="([^"]*us[^"]*\.mp3)"', r.text)
         if not match:
             return None
         src = match.group(1)
@@ -135,11 +136,11 @@ def fetch_us_pronunciation_bytes(word: str):
         if audio.status_code != 200:
             return None
 
-        content = BytesIO()
-        for chunk in audio.iter_content(chunk_size=8192):
-            if chunk:
-                content.write(chunk)
-        return content.getvalue()
+        # content = BytesIO()
+        # for chunk in audio.iter_content(chunk_size=8192):
+        #     if chunk:
+        #         content.write(chunk)
+        # return content.getvalue()
     except:
         return None
 
